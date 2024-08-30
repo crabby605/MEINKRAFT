@@ -11,19 +11,21 @@ const sprites = {
     dirt: new Image(),
     grass: new Image(),
     stone: new Image(),
-    player: new Image() // New image for the player
+    bedrock: new Image(), // New image for bedrock
+    player: new Image()  // New image for the player
 };
 
 sprites.dirt.src = 'assets/images/1dirt.png';
 sprites.grass.src = 'assets/images/0grass.png';
 sprites.stone.src = 'assets/images/2stone.png';
+sprites.bedrock.src = 'assets/images/bedrock.png'; // Path to bedrock sprite
 sprites.player.src = 'assets/images/player.png'; // Path to player sprite
 
 // Initialize world layout
 const world = Array(worldHeight).fill().map((_, y) => {
     return Array(worldWidth).fill().map((_, x) => {
-        if (y === worldHeight - 1) return 2; // Stone layer at the bottom
-        if (y >= worldHeight - 3) return 1; // Dirt layer above stone
+        if (y === worldHeight - 1) return 3; // Bedrock layer at the bottom
+        if (y >= worldHeight - 3) return 1; // Dirt layer above bedrock
         return 0; // Grass layer on top
     });
 });
@@ -69,6 +71,7 @@ function drawWorld() {
                 case 1: sprite = sprites.dirt; break;
                 case 0: sprite = sprites.grass; break;
                 case 2: sprite = sprites.stone; break;
+                case 3: sprite = sprites.bedrock; break; // Bedrock layer
                 default: continue;
             }
 
@@ -115,7 +118,7 @@ function isMouseOverBlock(x, y) {
 canvas.addEventListener('click', () => {
     for (let x = 0; x < worldWidth; x++) {
         for (let y = 0; y < worldHeight; y++) {
-            if (isMouseOverBlock(x, y) && world[y][x] !== null) {
+            if (isMouseOverBlock(x, y) && world[y][x] !== null && world[y][x] !== 3) { // Can't break bedrock
                 breakQueue.set(`${x},${y}`, Date.now()); // Set the break time for the block
                 drawWorld();
                 return;
@@ -158,7 +161,7 @@ function updatePlayer() {
 }
 
 function isSolidBlock(x, y) {
-    return world[y] && (world[y][x] === 0 || world[y][x] === 1 || world[y][x] === 2);
+    return world[y] && (world[y][x] === 0 || world[y][x] === 1 || world[y][x] === 2 || world[y][x] === 3); // 3 for bedrock
 }
 
 // Handle keyboard input
