@@ -17,9 +17,9 @@ const sprites = {
     sky: new Image() // New image for the sky
 };
 
-sprites.dirt.src = 'assets/image/dirt.png'; // Update paths as needed
-sprites.grass.src = 'assets/image/grass.png';
-sprites.stone.src = 'assets/image/stone.png';
+sprites.dirt.src = 'assets/image/1dirt.png'; // Update paths as needed
+sprites.grass.src = 'assets/image/0grass.png';
+sprites.stone.src = 'assets/image/2stone.png';
 sprites.bedrock.src = 'assets/image/bedrock.png'; // Path to bedrock sprite
 sprites.player.src = 'assets/image/player.png'; // Path to player sprite
 sprites.sky.src = 'assets/image/sky.png'; // Path to sky sprite
