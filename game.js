@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const tileSize = 32;
-const worldWidth = 25; // Number of tiles horizontally
-const worldHeight = 4;  // Number of tiles vertically (example)
+const worldWidth = 32; // Number of tiles horizontally
+const worldHeight = 20;  // Number of tiles vertically (example)
 
 // Load sprite images
 const sprites = {
