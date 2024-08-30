@@ -17,12 +17,18 @@ const sprites = {
     sky: new Image() // New image for the sky
 };
 
-sprites.dirt.src = 'assets/image/1dirt.png'; // Update paths as needed
+// Set image sources
+sprites.dirt.src = 'assets/image/1dirt.png'; // Update paths
 sprites.grass.src = 'assets/image/0grass.png';
 sprites.stone.src = 'assets/image/2stone.png';
 sprites.bedrock.src = 'assets/image/bedrock.png'; // Path to bedrock sprite
 sprites.player.src = 'assets/image/player.png'; // Path to player sprite
 sprites.sky.src = 'assets/image/sky.png'; // Path to sky sprite
+
+// Check if an image is loaded
+function isImageLoaded(image) {
+    return image.complete && image.naturalHeight !== 0;
+}
 
 // Initialize world layout
 const world = Array(worldHeight).fill().map((_, y) => {
@@ -70,7 +76,11 @@ function drawWorld() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas before redrawing
 
     // Draw the sky
-    ctx.drawImage(sprites.sky, 0, 0, canvas.width, skyHeight * tileSize);
+    if (isImageLoaded(sprites.sky)) {
+        ctx.drawImage(sprites.sky, 0, 0, canvas.width, skyHeight * tileSize);
+    } else {
+        console.error('Sky image not loaded.');
+    }
 
     for (let y = 0; y < worldHeight; y++) {
         for (let x = 0; x < worldWidth; x++) {
@@ -85,7 +95,7 @@ function drawWorld() {
                 default: continue;
             }
 
-            if (sprite.complete) {
+            if (isImageLoaded(sprite)) {
                 if (breakQueue.has(`${x},${y}`)) {
                     const breakTime = breakQueue.get(`${x},${y}`);
                     if (Date.now() - breakTime >= breakDuration) {
@@ -109,17 +119,16 @@ function drawWorld() {
                     ctx.strokeRect(x * tileSize + horizontalOffset, y * tileSize + skyHeight * tileSize + verticalOffset, tileSize, tileSize);
                 }
             } else {
-                sprite.onload = drawWorld; // Redraw when the image is loaded
-                sprite.onerror = () => {
-                    console.error(`Failed to load image: ${sprite.src}`);
-                };
+                console.error(`Failed to load image: ${sprite.src}`);
             }
         }
     }
 
     // Draw the player
-    if (sprites.player.complete) {
+    if (isImageLoaded(sprites.player)) {
         ctx.drawImage(sprites.player, player.x * tileSize + horizontalOffset, player.y * tileSize + skyHeight * tileSize + verticalOffset, tileSize, tileSize);
+    } else {
+        console.error('Player image not loaded.');
     }
 }
 
@@ -226,5 +235,11 @@ canvas.addEventListener('mousemove', trackMousePosition);
 window.addEventListener('resize', resizeCanvas);
 
 window.onload = () => {
+    // Verify if images are loaded
+    for (let key in sprites) {
+        sprites[key].onerror = () => {
+            console.error(`Failed to load image: ${sprites[key].src}`);
+        };
+    }
     resizeCanvas(); // Set initial canvas size and draw the world
 };
