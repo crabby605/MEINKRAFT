@@ -17,12 +17,12 @@ const sprites = {
     sky: new Image() // New image for the sky
 };
 
-sprites.dirt.src = 'image/dirt.png'; // Update paths as needed
-sprites.grass.src = 'image/grass.png';
+sprites.dirt.src = 'assets/image/dirt.png'; // Update paths as needed
+sprites.grass.src = 'assets/image/grass.png';
 sprites.stone.src = 'image/stone.png';
-sprites.bedrock.src = 'image/bedrock.png'; // Path to bedrock sprite
-sprites.player.src = 'image/player.png'; // Path to player sprite
-sprites.sky.src = 'image/sky.png'; // Path to sky sprite
+sprites.bedrock.src = 'assets/image/bedrock.png'; // Path to bedrock sprite
+sprites.player.src = 'assets/image/player.png'; // Path to player sprite
+sprites.sky.src = 'assets/image/sky.png'; // Path to sky sprite
 
 // Initialize world layout
 const world = Array(worldHeight).fill().map((_, y) => {
