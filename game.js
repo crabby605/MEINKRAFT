@@ -2,22 +2,24 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const tileSize = 32;
-const worldWidth = Math.floor(window.innerWidth / tileSize); // Number of tiles horizontally based on window width
-const worldHeight = Math.floor(window.innerHeight / tileSize); // Number of tiles vertically based on window height
+const worldWidth = 1000; // Number of tiles horizontally
+const worldHeight = 50;  // Number of tiles vertically
 const breakDuration = 500; // Duration for block breaking in milliseconds
 
 // Load sprite images
 const sprites = {
     dirt: new Image(),
     grass: new Image(),
-    stone: new Image()
+    stone: new Image(),
+    player: new Image() // New image for the player
 };
 
 sprites.dirt.src = 'assets/images/1dirt.png';
 sprites.grass.src = 'assets/images/0grass.png';
 sprites.stone.src = 'assets/images/2stone.png';
+sprites.player.src = 'assets/images/player.png'; // Path to player sprite
 
-// Expanded world layout to cover entire canvas using only existing blocks
+// Initialize world layout
 const world = Array(worldHeight).fill().map((_, y) => {
     return Array(worldWidth).fill().map((_, x) => {
         if (y === worldHeight - 1) return 2; // Stone layer at the bottom
@@ -29,9 +31,20 @@ const world = Array(worldHeight).fill().map((_, y) => {
 // Track blocks to break and their break time
 const breakQueue = new Map(); // Map to store the break time of blocks
 
+// Player properties
+const player = {
+    x: Math.floor(worldWidth / 2), // Start in the middle
+    y: Math.floor(worldHeight / 2),
+    width: tileSize,
+    height: tileSize,
+    velocityX: 0,
+    velocityY: 0,
+    isJumping: false
+};
+
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = worldWidth * tileSize;
+    canvas.height = worldHeight * tileSize;
 
     drawWorld();
 }
@@ -83,6 +96,9 @@ function drawWorld() {
             }
         }
     }
+
+    // Draw the player
+    ctx.drawImage(sprites.player, player.x * tileSize + horizontalOffset, player.y * tileSize + verticalOffset, tileSize, tileSize);
 }
 
 // Check if the mouse is over a specific block
@@ -108,15 +124,82 @@ canvas.addEventListener('click', () => {
     }
 });
 
-// Track mouse position
-let mouseX = 0;
-let mouseY = 0;
+// Handle player movement
+function updatePlayer() {
+    const { horizontalOffset, verticalOffset } = calculateOffsets();
+    
+    // Apply gravity
+    if (!player.isJumping && !isSolidBlock(player.x, player.y + 1)) {
+        player.velocityY += 0.5; // Gravity strength
+    } else {
+        player.velocityY = 0;
+    }
+    
+    // Update player position
+    player.x += player.velocityX;
+    player.y += player.velocityY;
 
-canvas.addEventListener('mousemove', (e) => {
+    // Ensure player doesn't move out of bounds
+    player.x = Math.max(0, Math.min(worldWidth - 1, player.x));
+    player.y = Math.max(0, Math.min(worldHeight - 1, player.y));
+
+    // Ensure player lands on solid blocks
+    if (player.velocityY > 0) {
+        const tileX = Math.floor(player.x);
+        const tileY = Math.floor(player.y + 1);
+        if (isSolidBlock(tileX, tileY)) {
+            player.y = tileY - 1; // Land on top of the block
+            player.velocityY = 0;
+            player.isJumping = false;
+        }
+    }
+
+    drawWorld();
+}
+
+function isSolidBlock(x, y) {
+    return world[y] && (world[y][x] === 0 || world[y][x] === 1 || world[y][x] === 2);
+}
+
+// Handle keyboard input
+document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+        case 'a':
+            player.velocityX = -2; // Move left
+            break;
+        case 'd':
+            player.velocityX = 2; // Move right
+            break;
+        case 'w':
+        case ' ':
+            if (!player.isJumping && isSolidBlock(player.x, player.y + 1)) {
+                player.velocityY = -10; // Jump
+                player.isJumping = true;
+            }
+            break;
+        case 's':
+            player.velocityY = 2; // Move down
+            break;
+    }
+    updatePlayer();
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'a' || e.key === 'd') {
+        player.velocityX = 0; // Stop horizontal movement
+    }
+    if (e.key === 's') {
+        player.velocityY = 0; // Stop vertical movement
+    }
+});
+
+function trackMousePosition(e) {
     mouseX = e.clientX;
     mouseY = e.clientY;
     drawWorld();
-});
+}
+
+canvas.addEventListener('mousemove', trackMousePosition);
 
 window.addEventListener('resize', resizeCanvas);
 
