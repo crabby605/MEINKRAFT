@@ -5,67 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEINKRAFT</title>
     <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
         canvas {
-            border: 1px solid black;
-            background-color: #87CEEB; 
+            display: block;
+            background-color: #87CEEB; /* Sky blue background */
+            cursor: none; /* Hide cursor */
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const tileSize = 32;
-        const worldWidth = 25; // Number of tiles horizontally
-        const worldHeight = 4;  // Number of tiles vertically (example)
-
-        // Load sprite images
-        const sprites = {
-            dirt: new Image(),
-            grass: new Image(),
-            stone: new Image()
-        };
-
-        sprites.dirt.src = 'assets/image/1dirt.png';
-        sprites.grass.src = 'assets/image/0grass.png';
-        sprites.stone.src = 'assets/image/2stone.png';
-
-        // Simple world layout (0 = grass, 1 = dirt, 2 = stone)
-        const world = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-        ];
-
-        // Calculate vertical offset to center the world
-        const verticalOffset = (canvas.height - (worldHeight * tileSize)) / 2;
-
-        // Render the world
-        function drawWorld() {
-            for (let y = 0; y < worldHeight; y++) {
-                for (let x = 0; x < worldWidth; x++) {
-                    let tile = world[y][x];
-                    let sprite;
-
-                    switch (tile) {
-                        case 0: sprite = sprites.dirt; break;
-                        case 1: sprite = sprites.grass; break;
-                        case 2: sprite = sprites.stone; break;
-                        default: continue;
-                    }
-
-                    ctx.drawImage(sprite, x * tileSize, y * tileSize + verticalOffset, tileSize, tileSize);
-                }
-            }
-        }
-
-        // Draw the game world once the images are loaded
-        window.onload = () => {
-            drawWorld();
-        };
-    </script>
+    <canvas id="gameCanvas"></canvas>
+    <script src="game.js"></script>
 </body>
 </html>
