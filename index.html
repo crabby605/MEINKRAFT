@@ -19,7 +19,7 @@
 
         const tileSize = 32;
         const worldWidth = 25; // Number of tiles horizontally
-        const worldHeight = 18; // Number of tiles vertically
+        const worldHeight = 4;  // Number of tiles vertically (example)
 
         // Load sprite images
         const sprites = {
@@ -40,6 +40,9 @@
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ];
 
+        // Calculate vertical offset to center the world
+        const verticalOffset = (canvas.height - (worldHeight * tileSize)) / 2;
+
         // Render the world
         function drawWorld() {
             for (let y = 0; y < worldHeight; y++) {
@@ -54,7 +57,7 @@
                         default: continue;
                     }
 
-                    ctx.drawImage(sprite, x * tileSize, y * tileSize, tileSize, tileSize);
+                    ctx.drawImage(sprite, x * tileSize, y * tileSize + verticalOffset, tileSize, tileSize);
                 }
             }
         }
