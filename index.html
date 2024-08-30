@@ -1,4 +1,68 @@
-<DOCTYPE! html>
-  <html>
-    
-  </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEINKRAFT</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            background-color: #87CEEB; 
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const tileSize = 32;
+        const worldWidth = 25; // Number of tiles horizontally
+        const worldHeight = 18; // Number of tiles vertically
+
+        // Load sprite images
+        const sprites = {
+            dirt: new Image(),
+            grass: new Image(),
+            stone: new Image()
+        };
+
+        sprites.dirt.src = 'assets/images/dirt.png';
+        sprites.grass.src = 'assets/images/grass.png';
+        sprites.stone.src = 'assets/images/stone.png';
+
+        // Simple world layout (0 = grass, 1 = dirt, 2 = stone)
+        const world = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+        ];
+
+        // Render the world
+        function drawWorld() {
+            for (let y = 0; y < worldHeight; y++) {
+                for (let x = 0; x < worldWidth; x++) {
+                    let tile = world[y][x];
+                    let sprite;
+
+                    switch (tile) {
+                        case 0: sprite = sprites.dirt; break;
+                        case 1: sprite = sprites.grass; break;
+                        case 2: sprite = sprites.stone; break;
+                        default: continue;
+                    }
+
+                    ctx.drawImage(sprite, x * tileSize, y * tileSize, tileSize, tileSize);
+                }
+            }
+        }
+
+        // Draw the game world once the images are loaded
+        window.onload = () => {
+            drawWorld();
+        };
+    </script>
+</body>
+</html>
