@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const tileSize = 32;
-const worldWidth = 25; // Number of tiles horizontally
-const worldHeight = 18; // Number of tiles vertically
+const worldWidth = Math.floor(window.innerWidth / tileSize); // Number of tiles horizontally based on window width
+const worldHeight = Math.floor(window.innerHeight / tileSize); // Number of tiles vertically based on window height
 
 // Load sprite images
 const sprites = {
@@ -12,26 +12,18 @@ const sprites = {
     stone: new Image()
 };
 
-sprites.dirt.src = 'assets/image/1dirt.png';
-sprites.grass.src = 'assets/image/0grass.png';
-sprites.stone.src = 'assets/image/2stone.png';
+sprites.dirt.src = 'assets/images/1dirt.png';
+sprites.grass.src = 'assets/images/0grass.png';
+sprites.stone.src = 'assets/images/2stone.png';
 
-// Predefined fixed terrain layout (1 = dirt, 0 = grass, 2 = stone)
-const world = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-];
+// Expanded world layout to cover entire canvas using only existing blocks
+const world = Array(worldHeight).fill().map((_, y) => {
+    return Array(worldWidth).fill().map((_, x) => {
+        if (y === worldHeight - 1) return 2; // Stone layer at the bottom
+        if (y >= worldHeight - 3) return 1; // Dirt layer above stone
+        return 0; // Grass layer on top
+    });
+});
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
