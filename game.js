@@ -6,7 +6,7 @@ const worldWidth = 1000; // Number of tiles horizontally
 const worldHeight = 50;  // Number of tiles vertically
 const breakDuration = 500; // Duration for block breaking in milliseconds
 
-// Load sprite images
+// Load sprite image
 const sprites = {
     dirt: new Image(),
     grass: new Image(),
@@ -15,11 +15,11 @@ const sprites = {
     player: new Image()  // New image for the player
 };
 
-sprites.dirt.src = 'assets/images/1dirt.png';
-sprites.grass.src = 'assets/images/0grass.png';
-sprites.stone.src = 'assets/images/2stone.png';
-sprites.bedrock.src = 'assets/images/bedrock.png'; // Path to bedrock sprite
-sprites.player.src = 'assets/images/player.png'; // Path to player sprite
+sprites.dirt.src = 'assets/image/1dirt.png';
+sprites.grass.src = 'assets/image/0grass.png';
+sprites.stone.src = 'assets/image/2stone.png';
+sprites.bedrock.src = 'assets/image/bedrock.png'; // Path to bedrock sprite
+sprites.player.src = 'assets/image/player.png'; // Path to player sprite
 
 // Initialize world layout
 const world = Array(worldHeight).fill().map((_, y) => {
