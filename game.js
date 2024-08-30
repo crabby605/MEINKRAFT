@@ -4,6 +4,7 @@ const ctx = canvas.getContext('2d');
 const tileSize = 32;
 const worldWidth = Math.floor(window.innerWidth / tileSize); // Number of tiles horizontally based on window width
 const worldHeight = Math.floor(window.innerHeight / tileSize); // Number of tiles vertically based on window height
+const breakDuration = 500; // Duration for block breaking in milliseconds
 
 // Load sprite images
 const sprites = {
@@ -24,6 +25,9 @@ const world = Array(worldHeight).fill().map((_, y) => {
         return 0; // Grass layer on top
     });
 });
+
+// Track blocks to break and their break time
+const breakQueue = new Map(); // Map to store the break time of blocks
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -55,7 +59,21 @@ function drawWorld() {
                 default: continue;
             }
 
-            ctx.drawImage(sprite, x * tileSize + horizontalOffset, y * tileSize + verticalOffset, tileSize, tileSize);
+            if (breakQueue.has(`${x},${y}`)) {
+                const breakTime = breakQueue.get(`${x},${y}`);
+                if (Date.now() - breakTime >= breakDuration) {
+                    world[y][x] = null; // Set the block to null to remove it
+                    breakQueue.delete(`${x},${y}`);
+                } else {
+                    // Draw a semi-transparent block to indicate it's being broken
+                    ctx.globalAlpha = 0.5;
+                    ctx.drawImage(sprite, x * tileSize + horizontalOffset, y * tileSize + verticalOffset, tileSize, tileSize);
+                    ctx.globalAlpha = 1.0;
+                    continue;
+                }
+            } else {
+                ctx.drawImage(sprite, x * tileSize + horizontalOffset, y * tileSize + verticalOffset, tileSize, tileSize);
+            }
 
             // Draw a black outline only on the block the mouse is over
             if (isMouseOverBlock(x, y)) {
@@ -77,12 +95,12 @@ function isMouseOverBlock(x, y) {
            mouseY >= blockY && mouseY < blockY + tileSize;
 }
 
-// Remove a block (set it to null) when clicked
+// Handle block breaking
 canvas.addEventListener('click', () => {
     for (let x = 0; x < worldWidth; x++) {
         for (let y = 0; y < worldHeight; y++) {
-            if (isMouseOverBlock(x, y)) {
-                world[y][x] = null; // Set the block to null to remove it
+            if (isMouseOverBlock(x, y) && world[y][x] !== null) {
+                breakQueue.set(`${x},${y}`, Date.now()); // Set the break time for the block
                 drawWorld();
                 return;
             }
